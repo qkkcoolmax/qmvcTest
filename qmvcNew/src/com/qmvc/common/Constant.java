@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.qmvc.core.JvnController;
-import com.qmvc.core.JvnTable;
+import com.qmvc.core.QmvcController;
+import com.qmvc.core.QmvcTable;
 import com.qmvc.onlinedoc.Online;
 
 /**
- * jvn框架的信息库
+ * 
  * 
  * @author Administrator
  * 
@@ -23,9 +23,8 @@ public class Constant {
 	private String encoding = "utf-8";// 默认编码格式
 	private List<Online> onlinedocs;
 	// 数据库表名字跟类字节码的映射
-	private JvnTable table = new JvnTable();
+	private QmvcTable table = new QmvcTable();
 	private List<Class> servClassList = new ArrayList<Class>();
-
 
 	public List<Class> getServClassList() {
 		return servClassList;
@@ -58,7 +57,7 @@ public class Constant {
 	 * 
 	 *            使用一个泛型，来限定要put進來的值必須繼承了框架的JvnController
 	 */
-	public void setRoute(String route, Class<? extends JvnController> clazz) {
+	public void setRoute(String route, Class<? extends QmvcController> clazz) {
 		routeMap.put(route, clazz);
 	}
 
@@ -74,17 +73,16 @@ public class Constant {
 		this.encoding = encoding;
 	}
 
-	public JvnTable getTable() {
+	public QmvcTable getTable() {
 		return table;
 	}
 
-	public void setTable(JvnTable table) {
+	public void setTable(QmvcTable table) {
 		this.table = table;
 	}
-	
-	public void  addClass(Class clazz){
+
+	public void addClass(Class clazz) {
 		this.servClassList.add(clazz);
 	}
-	
-	
+
 }
