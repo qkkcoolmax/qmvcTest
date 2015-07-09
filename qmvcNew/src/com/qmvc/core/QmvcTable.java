@@ -9,8 +9,7 @@ import java.util.Map;
  * 
  * 
  * 
- * @author everxs
- *
+ * 
  */
 public class QmvcTable {
 
