@@ -17,7 +17,7 @@ import com.qmvc.kit.UrlKit;
 import com.qmvc.test.MyConfig;
 
 /**
- * jvn¿ò¼ÜµÄÖ÷¹ıÂËÆ÷
+ * 
  * 
  * @author Administrator
  * 
