@@ -2,9 +2,9 @@ package com.qmvc.test;
 
 import com.qmvc.common.Constant;
 import com.qmvc.connection.pool.JdbcConfig;
-import com.qmvc.core.JvnConfig;
+import com.qmvc.core.QmvcConfig;
 
-public class MyConfig extends JvnConfig {
+public class MyConfig extends QmvcConfig {
 
 	@Override
 	public void setInitParam(Constant constant) {

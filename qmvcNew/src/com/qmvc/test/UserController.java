@@ -10,12 +10,12 @@ import com.qmvc.annotation.Aop;
 import com.qmvc.annotation.Controller;
 import com.qmvc.annotation.OnlineController;
 import com.qmvc.annotation.OnlineMethod;
-import com.qmvc.core.JvnController;
+import com.qmvc.core.QmvcController;
 import com.qmvc.onlinedoc.Online;
 
 @OnlineController(memo = "测试用的controller")
 @Controller(space = "/test")
-public class UserController extends JvnController {
+public class UserController extends QmvcController {
 
 	public void echo() {
 		// 注意父类的私有属性，子类继承了但是被隐藏了，但是通过调用父类继承过来的的方法还是可以得到的。
