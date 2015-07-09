@@ -12,10 +12,8 @@ import com.qmvc.onlinedoc.Online;
 public class OnlineDocKit {
 
 	/**
-	 * 加载有注解的Controller
-	 * 启动时利用filter的inIT初始化过程，扫描�?��者配置的�?��controller类及其方法�?如果有注解就将相应的方法信息
-	 * 封装成Online对象�?
-	 */
+	*
+	*/
 
 	public static List<Online> loadClass(Map<String, Class> map) {
 		List<Online> onlineList = new ArrayList<Online>();

@@ -15,7 +15,7 @@ import java.util.Properties;
 /**
  * 该方法用于读取文件，保存文件�?
  * 
- * @author everxs
+ * 
  * 
  */
 public class FileKit {
