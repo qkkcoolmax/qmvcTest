@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.qmvc.core.JvnModel;
+import com.qmvc.core.QmvcModel;
 import com.qmvc.test.User;
 
 public class MapKit {
@@ -16,7 +16,7 @@ public class MapKit {
 			"yyyy-MM-dd");
 
 	/**
-	 * 把map转换成对应的Object
+	 * 鎶妋ap杞崲鎴愬搴旂殑Object
 	 * 
 	 * @param map
 	 * @param clazz
@@ -110,13 +110,13 @@ public class MapKit {
 	}
 
 	/**
-	 * 把map转换成对应的Object
+	 * 鎶妋ap杞崲鎴愬搴旂殑Object
 	 * 
 	 * @param map
 	 * @param clazz
 	 * @return
 	 */
-	public static Object map2Model(Map map, Class<? extends JvnModel> clazz) {
+	public static Object map2Model(Map map, Class<? extends QmvcModel> clazz) {
 		try {
 			Object object = clazz.newInstance();
 			Method m = clazz.getMethod("set", String.class, Object.class);
@@ -132,7 +132,7 @@ public class MapKit {
 	}
 
 	/**
-	 * 返回该类�?set方法名称跟参数的simpleName
+	 * 杩斿洖璇ョ被锟�set鏂规硶鍚嶇О璺熷弬鏁扮殑simpleName
 	 * 
 	 * @param clazz
 	 * @return
@@ -157,7 +157,7 @@ public class MapKit {
 		Map<String, String> map = new HashMap<String, String>();
 		for (String key : oMap.keySet()) {
 			Object obj = oMap.get(key);
-			// 这里是如果传进来的是date类的参数，那么我们手动给他转成字符串然后放进去�?
+			// 杩欓噷鏄鏋滀紶杩涙潵鐨勬槸date绫荤殑鍙傛暟锛岄偅涔堟垜浠墜鍔ㄧ粰浠栬浆鎴愬瓧绗︿覆鐒跺悗鏀捐繘鍘伙拷?
 			if (obj instanceof Date) {
 				try {
 					obj = sdfDateTime.format(obj);
@@ -172,13 +172,13 @@ public class MapKit {
 	}
 
 	public static void main(String[] args) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("name", "啊蛋");
-		map.put("age", 29);
-		map.put("school", "清华大学");
-		map.put("birthday", "2014-9-12");
-
-		User user = (User) map2Object(map, User.class);
+		/*
+		 * Map<String, Object> map = new HashMap<String, Object>();
+		 * map.put("name", "鍟婅泲"); map.put("age", 29); map.put("school",
+		 * "娓呭崕澶у"); map.put("birthday", "2014-9-12");
+		 * 
+		 * User user = (User) map2Object(map, User.class)
+		 */;
 		// user.print();
 	}
 }
