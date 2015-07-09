@@ -8,20 +8,20 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 
 /**
- * druid连接池，框架內置是支持�?個连接池的�?这里对阿里巴巴的这个连接池进行一个简单的封装�?
+ * druid杩炴帴姹狅紝妗嗘灦鍏х疆鏄敮鎸侊拷?鍊嬭繛鎺ユ睜鐨勶拷?杩欓噷瀵归樋閲屽反宸寸殑杩欎釜杩炴帴姹犺繘琛屼竴涓畝鍗曠殑灏佽锟�
  * 
  * 
- * @author everxs
+ *
  * 
  */
 public class DruidPool implements Pool {
 
 	private static DruidDataSource dataSource;
-	// 使用threadlocal的目的应该是为了以后实现事务做准备�?
+	// 浣跨敤threadlocal鐨勭洰鐨勫簲璇ユ槸涓轰簡浠ュ悗瀹炵幇浜嬪姟鍋氬噯澶囷拷?
 	private final static ThreadLocal<Connection> connections = new ThreadLocal<Connection>();
 
 	/**
-	 * 创建好druid
+	 * 鍒涘缓濂絛ruid
 	 * 
 	 * @param jdbcConfig
 	 */
@@ -37,7 +37,7 @@ public class DruidPool implements Pool {
 		dataSource.setMinIdle(1);
 		dataSource.setMaxActive(jdbcConfig.getMaxActive());
 		dataSource.setMaxWait(jdbcConfig.getMaxWait());
-		// 启用监控统计功能
+		// 鍚敤鐩戞帶缁熻鍔熻兘
 		try {
 			dataSource.setFilters("stat");
 		} catch (SQLException e) {
@@ -51,12 +51,12 @@ public class DruidPool implements Pool {
 	}
 
 	/**
-	 * 获取�?��连接
+	 * 鑾峰彇锟�锟斤拷杩炴帴
 	 * 
-	 * 从连接池中拿取一个连接，这里对连接池做了�?��封装，将拿到的连接池同时放入了当前线程的保险箱中�?
-	 * 保证了一个线程如果需要多次获得connetion的话，永远使用的是同�?��接，为事务做准备�?
+	 * 浠庤繛鎺ユ睜涓嬁鍙栦竴涓繛鎺ワ紝杩欓噷瀵硅繛鎺ユ睜鍋氫簡锟�锟斤拷灏佽锛屽皢鎷垮埌鐨勮繛鎺ユ睜鍚屾椂鏀惧叆浜嗗綋鍓嶇嚎绋嬬殑淇濋櫓绠变腑锟�
+	 * 淇濊瘉浜嗕竴涓嚎绋嬪鏋滈渶瑕佸娆¤幏寰梒onnetion鐨勮瘽锛屾案杩滀娇鐢ㄧ殑鏄悓锟�锟斤拷鎺ワ紝涓轰簨鍔″仛鍑嗗锟�
 	 * 
-	 * 為什麼加同步�?
+	 * 鐐轰粈楹煎姞鍚屾锟�
 	 * 
 	 * @return
 	 */
@@ -64,14 +64,14 @@ public class DruidPool implements Pool {
 
 		Connection conn = connections.get();
 
-		System.out.println("进入 �? + conn");
+		System.out.println("杩涘叆 锟� + conn");
 
 		try {
-			// 這裡判斷，如果当前线程第�?��或取连接或�?之前那个连接已经被关闭了，没办法只好重新获取连接�?
+			// 閫欒！鍒ゆ柗锛屽鏋滃綋鍓嶇嚎绋嬬锟�锟斤拷鎴栧彇杩炴帴鎴栵拷?涔嬪墠閭ｄ釜杩炴帴宸茬粡琚叧闂簡锛屾病鍔炴硶鍙ソ閲嶆柊鑾峰彇杩炴帴锟�
 
 			if (conn == null || conn.isClosed()) {
 				conn = dataSource.getConnection();
-				System.out.println("null 后：" + conn);
+				System.out.println("null 鍚庯細" + conn);
 				connections.set(conn);
 			}
 
@@ -84,7 +84,7 @@ public class DruidPool implements Pool {
 
 	/**
 	 * 
-	 * 是不是在每次交还线程时调用这个方法让线程也從threadlocal中清除�?
+	 * 鏄笉鏄湪姣忔浜よ繕绾跨▼鏃惰皟鐢ㄨ繖涓柟娉曡绾跨▼涔熷緸threadlocal涓竻闄わ拷?
 	 * 
 	 * */
 	public synchronized void clearConnection() {
