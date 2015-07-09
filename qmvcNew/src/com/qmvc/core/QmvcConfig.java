@@ -16,7 +16,7 @@ import com.qmvc.kit.ScanKit;
 import com.qmvc.onlinedoc.Online;
 
 /**
- * jvn�������ļ���
+ * 
  * 
  * @author Administrator
  * 
