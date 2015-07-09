@@ -49,7 +49,7 @@ public class ActionHandle {
 				if(mt.getAnnotation(AutoWired.class)!=null){
 					Class[] classes = mt.getParameterTypes();
 					Class inte = classes[0];
-					List<Class>	 list =JvnConfig.CONSTANT.getServClassList();
+					List<Class>	 list =QmvcConfig.CONSTANT.getServClassList();
 					for(Class cla:list){
 						if(cla.getInterfaces()[0]==inte){
 							 
@@ -82,7 +82,7 @@ public class ActionHandle {
 					.getAnnotation(TransactionMethod.class);
 
 			if (aop != null) {
-				InterceptorInterface interceptor = (InterceptorInterface) JvnConfig.beanfactory
+				InterceptorInterface interceptor = (InterceptorInterface) QmvcConfig.beanfactory
 						.getSimpleBean(aop.interceptor());// 这里是获得了注解键值对中的值.这个值是一个class（用戶自己寫的自己的攔截器）
 				// 所以我们可以直接用这个class反射出来用户拦截器类的实例。然后用超类型接住。
 				// 注意，这里使用bean工厂来生成要要的bean
@@ -91,7 +91,7 @@ public class ActionHandle {
 
 					// 对controller的方法也实现事务支持。
 					if (tm != null) {
-						Connection con = JvnConfig.pool.getConnection();
+						Connection con = QmvcConfig.pool.getConnection();
 						con.setAutoCommit(false);
 						try {
 							method.invoke(obj, null);
@@ -99,7 +99,7 @@ public class ActionHandle {
 							con.rollback();
 						} finally {
 							con.close();
-							JvnConfig.pool.clearConnection();
+							QmvcConfig.pool.clearConnection();
 						}
 					}
 
@@ -113,7 +113,7 @@ public class ActionHandle {
 				 * tm是一个声明式的事务注解。用于修饰方法的
 				 * */
 				if (tm != null) {
-					Connection con = JvnConfig.pool.getConnection();
+					Connection con = QmvcConfig.pool.getConnection();
 					con.setAutoCommit(false);
 					try {
 						method.invoke(obj, null);
@@ -124,7 +124,7 @@ public class ActionHandle {
 						// 将连接归还线程池
 						con.close();
 						// 清空threadlocal中的connection，下次要用重新取。
-						JvnConfig.pool.clearConnection();
+						QmvcConfig.pool.clearConnection();
 					}
 				}
 
