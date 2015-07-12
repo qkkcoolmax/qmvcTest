@@ -2,21 +2,26 @@ package com.qmvc.container;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Container {
 
-	private final static Map<String, Object> contextMap = new HashMap<String, Object>();
+	/**
+	 * 用于存放所有单代理Service的容器。
+	 * 
+	 * */
+	private final static Map<Class, Object> contextMap = new ConcurrentHashMap<Class, Object>();
 
 	public Container() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public synchronized void putObject(String className, Object object) {
-		contextMap.put(className, object);
+	public static void putObject(Class clazz, Object object) {
+		contextMap.put(clazz, object);
 	}
 
-	public synchronized Object getObject(String className) {
-		return contextMap.get(className);
+	public static Object getObject(Class clazz) {
+		return contextMap.get(clazz);
 	}
 
 }
