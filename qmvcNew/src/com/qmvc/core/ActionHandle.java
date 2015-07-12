@@ -8,9 +8,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.qmvc.Proxyfactory.ProxyFactory;
 import com.qmvc.annotation.Aop;
 import com.qmvc.annotation.AutoWired;
 import com.qmvc.annotation.TransactionMethod;
+import com.qmvc.container.Container;
 import com.qmvc.kit.PrintKit;
 
 /**
@@ -43,33 +45,30 @@ public class ActionHandle {
 					.invoke(obj, req);
 			controller.getMethod("setResponse", HttpServletResponse.class)
 					.invoke(obj, resp);
-			//注入其service代理
+
+			// 注入其service的代理，Service为单例，代理还是多例吧。
 			Method[] methods = controller.getMethods();
-			for(Method mt :methods){
-				if(mt.getAnnotation(AutoWired.class)!=null){
+			for (Method mt : methods) {
+				if (mt.getAnnotation(AutoWired.class) != null) {
 					Class[] classes = mt.getParameterTypes();
 					Class inte = classes[0];
-					List<Class>	 list =QmvcConfig.CONSTANT.getServClassList();
-					for(Class cla:list){
-						if(cla.getInterfaces()[0]==inte){
-							 
-							
-							
-							
-							
+					List<Class> list = QmvcConfig.CONSTANT.getServClassList();
+					for (Class cla : list) {
+						if (cla.getInterfaces()[0] == inte) {
+							Object service = Container.getObject(cla);
+							if (service == null) {
+								service = cla.newInstance();
+								Container.putObject(cla, service);
+							}
+							Object proxy = ProxyFactory.createProxy(service);
+							mt.invoke(obj, proxy);
+							break;
 						}
-						
 					}
-				
 				}
-				
-				
-			}
-			
-			
-			// 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
-			Method method = controller.getMethod(methodName, null);
 
+			}			// 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+			Method method = controller.getMethod(methodName, null);
 			/**
 			 * 拦截器（aop）工作部分
 			 * */
@@ -77,10 +76,9 @@ public class ActionHandle {
 			// 如果没有这个注解将会返回空。
 			// 否则就获得了该方法上的“注解对象”
 			Aop aop = method.getAnnotation(Aop.class);//
-
-			TransactionMethod tm = method
-					.getAnnotation(TransactionMethod.class);
-
+			//action就不做事务了吧
+			/*TransactionMethod tm = method
+					.getAnnotation(TransactionMethod.class);*/
 			if (aop != null) {
 				InterceptorInterface interceptor = (InterceptorInterface) QmvcConfig.beanfactory
 						.getSimpleBean(aop.interceptor());// 这里是获得了注解键值对中的值.这个值是一个class（用戶自己寫的自己的攔截器）
@@ -88,50 +86,16 @@ public class ActionHandle {
 				// 注意，这里使用bean工厂来生成要要的bean
 				try {
 					interceptor.before();
-
-					// 对controller的方法也实现事务支持。
-					if (tm != null) {
-						Connection con = QmvcConfig.pool.getConnection();
-						con.setAutoCommit(false);
-						try {
-							method.invoke(obj, null);
-						} catch (RuntimeException e) {
-							con.rollback();
-						} finally {
-							con.close();
-							QmvcConfig.pool.clearConnection();
-						}
-					}
-
+					method.invoke(obj, null);
 					interceptor.after();
 				} catch (Exception e) {
 					interceptor.exception();
 					throw new RuntimeException(e);
 				}
 			} else {
-				/**
-				 * tm是一个声明式的事务注解。用于修饰方法的
-				 * */
-				if (tm != null) {
-					Connection con = QmvcConfig.pool.getConnection();
-					con.setAutoCommit(false);
-					try {
-						method.invoke(obj, null);
-						con.commit();
-					} catch (RuntimeException e) {
-						con.rollback();
-					} finally {
-						// 将连接归还线程池
-						con.close();
-						// 清空threadlocal中的connection，下次要用重新取。
-						QmvcConfig.pool.clearConnection();
-					}
-				}
-
+				method.invoke(obj, null);
 			}
-
 		} catch (Exception e) {
-
 			System.out.println("方法不存在");
 			throw new RuntimeException(e);
 
