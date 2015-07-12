@@ -13,7 +13,7 @@ import com.qmvc.annotation.Service;
 import com.qmvc.common.Constant;
 
 /**
- * 扫描�?
+ * 鎵弿锟�
  * 
  * @author Administrator
  * 
@@ -21,49 +21,53 @@ import com.qmvc.common.Constant;
 public class ScanKit {
 
 	/**
-	 * 注意tomcat加载webapp下的lib中的�?方包仍然是用的webapp加载器，和web应用使用的是�?��加载器�?
-	 * 每个应用的webapp加载器加载的是他的webapp下的/WEB-INF/下的类�?�?��包括classes和lib下的类�?
+	 * 娉ㄦ剰tomcat鍔犺浇webapp涓嬬殑lib涓殑锟�鏂瑰寘浠嶇劧鏄敤鐨剋ebapp鍔犺浇鍣紝鍜寃eb搴旂敤浣跨敤鐨勬槸锟�锟斤拷鍔犺浇鍣
+	 * 拷? 姣忎釜搴旂敤鐨剋ebapp鍔犺浇鍣ㄥ姞杞界殑鏄粬鐨剋ebapp涓嬬殑/WEB-INF/涓嬬殑绫伙拷?锟�
+	 * 锟斤拷鍖呮嫭classes鍜宭ib涓嬬殑绫伙拷?
 	 * 
 	 * 
-	 * tomcat第一次得到一个请求时，开启一个线程（设置线程上下文加载器为webapp�?
-	 * 线程中会使用webapp加载器加载相应webapp的filter，当然这个filter是框架提供的filter.而我们没�?
-	 * 把框架包放到公共lib中的
-	 * �?那么�?��加载这个filter的就确实会是webapp加载�?然後此時線程上下文的加載器應該也被tomcat设置为了
-	 * 对应的webapp加载�?
-	 * 如果我�?把框架包放到公共lib下了,那在使用webapp加載框架filter時會發現filter已经被父级加载器加载过了,�?��直接使用.
-	 * 调用其相应的方法,如果这时框架源码中想要获取用户的资源就只能先通過线程上下文加载器来获得webapp加載�?然后再用
-	 * 這�?加載器來尋找并加載用户的类，不然可能找不到�?因为此时直接使用class.forname加载類使用的類加載器是父级加载器�?
+	 * tomcat绗竴娆″緱鍒颁竴涓姹傛椂锛屽紑鍚竴涓嚎绋嬶紙璁剧疆绾跨▼涓婁笅鏂囧姞杞藉櫒涓簑ebapp锟�
+	 * 绾跨▼涓細浣跨敤webapp鍔犺浇鍣ㄥ姞杞界浉搴攚ebapp鐨刦ilter锛屽綋鐒惰繖涓猣ilter鏄
+	 * 鏋舵彁渚涚殑filter.鑰屾垜浠病锟� 鎶婃鏋跺寘鏀惧埌鍏叡lib涓殑
+	 * 锟�閭ｄ箞锟�锟斤拷鍔犺浇杩欎釜filter鐨勫氨纭疄浼氭槸webapp鍔犺浇锟
+	 * �鐒跺緦姝ゆ檪绶氱▼涓婁笅鏂囩殑鍔犺級鍣ㄦ噳瑭蹭篃琚玹omcat璁剧疆涓轰簡 瀵瑰簲鐨剋ebapp鍔犺浇锟�
+	 * 濡傛灉鎴戯拷?鎶婃鏋跺寘鏀惧埌鍏叡lib涓嬩簡
+	 * ,閭ｅ湪浣跨敤webapp鍔犺級妗嗘灦filter鏅傛渻鐧肩従filter宸茬粡琚埗绾у姞杞藉櫒鍔犺浇杩囦簡,锟�锟斤拷鐩存帴浣跨敤.
+	 * 璋冪敤鍏剁浉搴旂殑鏂规硶
+	 * ,濡傛灉杩欐椂妗嗘灦婧愮爜涓兂瑕佽幏鍙栫敤鎴风殑璧勬簮灏卞彧鑳藉厛閫氶亷绾跨▼涓婁笅鏂囧姞杞藉櫒鏉ヨ幏寰梬ebapp鍔犺級锟�鐒跺悗鍐嶇敤
+	 * 閫欙拷?鍔犺級鍣ㄤ締灏嬫壘骞跺姞杓夌敤鎴风殑绫伙紝涓嶇劧鍙兘鎵句笉鍒帮拷?鍥犱负姝ゆ椂鐩存帴浣跨敤class.
+	 * forname鍔犺浇椤炰娇鐢ㄧ殑椤炲姞杓夊櫒鏄埗绾у姞杞藉櫒锟�
 	 * 
-	 * 框架放到lib包一般不会出問題�?
+	 * 妗嗘灦鏀惧埌lib鍖呬竴鑸笉浼氬嚭鍟忛锟�
 	 * */
 	public static void scanClass(Constant constant) {
-		// 拿到classes绝对路劲
+		// 鎷垮埌classes缁濆璺姴
 		/*
 		 * System.out.println(DiskFileItemFactory.class.getClassLoader().getResource
 		 * (""));
 		 */
-		// 這裡如果直接用框架某個類的加載器來獲得路徑的话，路径可能是不对的，拿到的不是classpath。扫描出来的类也就不对�?
+		// 閫欒！濡傛灉鐩存帴鐢ㄦ鏋舵煇鍊嬮鐨勫姞杓夊櫒渚嗙嵅寰楄矾寰戠殑璇濓紝璺緞鍙兘鏄笉瀵圭殑锛屾嬁鍒扮殑涓嶆槸classpath銆傛壂鎻忓嚭鏉ョ殑绫讳篃灏变笉瀵癸拷?
 		String path = Thread.currentThread().getContextClassLoader()
 				.getResource("").getPath();
-		// 拿实际上下面加载用户类时也应该用webapp加载器加载才保险。否则找不到对应的用户类�?
-		// 因為class。forname默认使用的调用位置的类加载器来加载�?
+		// 鎷垮疄闄呬笂涓嬮潰鍔犺浇鐢ㄦ埛绫绘椂涔熷簲璇ョ敤webapp鍔犺浇鍣ㄥ姞杞芥墠淇濋櫓銆傚惁鍒欐壘涓嶅埌瀵瑰簲鐨勭敤鎴风被锟�
+		// 鍥犵偤class銆俧orname榛樿浣跨敤鐨勮皟鐢ㄤ綅缃殑绫诲姞杞藉櫒鏉ュ姞杞斤拷?
 
-		// tomcat应该设置过当前执行这个方法的线程为webapp加载器�?
-		// 这里�?��使用线程上下文加载器，拿到tomcat中加载web应用的类加载器，这样才能获取到正确的classpath路径�?
+		// tomcat搴旇璁剧疆杩囧綋鍓嶆墽琛岃繖涓柟娉曠殑绾跨▼涓簑ebapp鍔犺浇鍣拷?
+		// 杩欓噷锟�锟斤拷浣跨敤绾跨▼涓婁笅鏂囧姞杞藉櫒锛屾嬁鍒皌omcat涓姞杞絯eb搴旂敤鐨勭被鍔犺浇鍣紝杩欐牱鎵嶈兘鑾峰彇鍒版纭殑classpath璺緞锟�
 		// String path =
 		// ScanKit.class.getClassLoader().getResource("").getPath();
-		// 得到类的全名�?例如�?con.everxs.test.TestController.class
+		// 寰楀埌绫荤殑鍏ㄥ悕锟�渚嬪锟�con.everxs.test.TestController.class
 		List<String> listClass = FileKit.listClassFileAbsolutePath(path);
-		// 拿到用户路径下的�?��类的名字（全限定名）
+		// 鎷垮埌鐢ㄦ埛璺緞涓嬬殑锟�锟斤拷绫荤殑鍚嶅瓧锛堝叏闄愬畾鍚嶏級
 		for (String clazzStr : listClass) {
 			try {
-				// 找到这个类全名称的Class
-				// 首次申請使用的是加载scanClass类的类加载器�?
-				// 这里其实�?��也使用線程上下文加載器來加載�?
+				// 鎵惧埌杩欎釜绫诲叏鍚嶇О鐨凜lass
+				// 棣栨鐢宠珛浣跨敤鐨勬槸鍔犺浇scanClass绫荤殑绫诲姞杞藉櫒锟�
+				// 杩欓噷鍏跺疄锟�锟斤拷涔熶娇鐢ㄧ窔绋嬩笂涓嬫枃鍔犺級鍣ㄤ締鍔犺級锟�
 				Class clazz = Thread.currentThread().getContextClassLoader()
 						.loadClass(clazzStr);
 				// Class clazz = Class.forName(clazzStr);
-				System.out.println("加载�? + clazz.getName()");
+				System.out.println("鍔犺浇锟� + clazz.getName()");
 
 				if (clazz != null) {
 					Controller controller = (Controller) clazz
@@ -74,7 +78,7 @@ public class ScanKit {
 						constant.setRoute(controller.space(), clazz);
 					}
 					if (model != null) {
-						// filter初始化的时�?，执行这里，扫描到用户所有的model，将modelclass和表名的映射放置到常量中�?
+						// filter鍒濆鍖栫殑鏃讹拷?锛屾墽琛岃繖閲岋紝鎵弿鍒扮敤鎴锋墍鏈夌殑model锛屽皢modelclass鍜岃〃鍚嶇殑鏄犲皠鏀剧疆鍒板父閲忎腑锟�
 						constant.getTable().setTable(clazz, model.tablename());
 					}
 					if (serv != null) {
@@ -83,7 +87,7 @@ public class ScanKit {
 
 				}
 			} catch (Exception e) {
-				System.out.println("找不到类文件");
+				System.out.println("鎵句笉鍒扮被鏂囦欢");
 			}
 		}
 	}
