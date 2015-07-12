@@ -26,7 +26,7 @@ public class QmvcFilter implements Filter {
 	QmvcConfig config;
 
 	public void destroy() {
-		System.out.println("jvn¿ò¼ÜÏú»Ù");
+		System.out.println("qmvc¿ò¼ÜÏú»Ù");
 
 	}
 
