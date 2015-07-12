@@ -24,8 +24,11 @@ public class Constant {
 	private List<Online> onlinedocs;
 	// 数据库表名字跟类字节码的映射
 	private QmvcTable table = new QmvcTable();
+	
 	private List<Class> servClassList = new ArrayList<Class>();
 
+	
+	
 	public List<Class> getServClassList() {
 		return servClassList;
 	}
