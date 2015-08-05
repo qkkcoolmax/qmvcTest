@@ -21,12 +21,13 @@ import com.qmvc.core.QmvcConfig;
 public class MyInvokeHandler implements InvocationHandler {
 
 	private Object object;
-	private Aop aop=null;
+	private Aop aop = null;
 	private boolean tran = false;
+
 	public MyInvokeHandler(Object ob) {
 		this.object = ob;
-		if(ob.getClass().getAnnotation(TransactionClass.class)!=null){
-			this.tran=true;
+		if (ob.getClass().getAnnotation(TransactionClass.class) != null) {
+			this.tran = true;
 		}
 	}
 
@@ -35,29 +36,29 @@ public class MyInvokeHandler implements InvocationHandler {
 			throws Throwable {
 		Object reob = null;
 		Annotation[] anos = method.getAnnotations();
-		for(Annotation ano :anos){
-			if(ano.getClass()==Aop.class){
+		for (Annotation ano : anos) {
+			if (ano.getClass() == Aop.class) {
 				aop = (Aop) ano;
 			}
-			if(ano.getClass()==TransactionMethod.class){
-				tran=true;
+			if (ano.getClass() == TransactionMethod.class) {
+				tran = true;
 			}
-			
-			if(aop==null&&tran==false){
+
+			if (aop == null && tran == false) {
 				reob = method.invoke(object, args);
-			}else if(aop!=null&&tran==false){
+			} else if (aop != null && tran == false) {
 				InterceptorInterface interceptor = (InterceptorInterface) QmvcConfig.beanfactory
 						.getSimpleBean(aop.interceptor());
-				try{
-				interceptor.before();
-				reob = method.invoke(object, args);
-				interceptor.after();
-				}catch(Exception e){
+				try {
+					interceptor.before();
+					reob = method.invoke(object, args);
+					interceptor.after();
+				} catch (Exception e) {
 					interceptor.exception();
 					throw new RuntimeException(e);
 				}
-				}else if(aop==null&&tran==true){
-					
+			} else if (aop == null && tran == true) {
+
 				Connection con = QmvcConfig.pool.getConnection();
 				con.setAutoCommit(false);
 				try {
@@ -67,13 +68,14 @@ public class MyInvokeHandler implements InvocationHandler {
 					con.rollback();
 					throw e;
 				} finally {
-					//将连接归还线程池
+					// 将连接归还线程池，这之前要设置为自动提交，以免下一次人家没有做事务。
+					con.setAutoCommit(true);
 					con.close();
-					//清空threadlocal中的connection，下次要用重新取。
+					// 清空threadlocal中的connection，下次要用重新取。
 					QmvcConfig.pool.clearConnection();
 				}
-				
-			}else{
+
+			} else {
 				InterceptorInterface interceptor = (InterceptorInterface) QmvcConfig.beanfactory
 						.getSimpleBean(aop.interceptor());
 				interceptor.before();
@@ -87,12 +89,13 @@ public class MyInvokeHandler implements InvocationHandler {
 					interceptor.exception();
 					throw e;
 				} finally {
+					con.setAutoCommit(true);
 					con.close();
 					QmvcConfig.pool.clearConnection();
 				}
-				
+
 			}
-			
+
 		}
 		return reob;
 	}
