@@ -13,11 +13,13 @@ import java.util.Map;
 
 import com.qmvc.core.QmvcConfig;
 import com.qmvc.core.QmvcModel;
+import com.qmvc.exception.TooMuchParamException;
 import com.qmvc.kit.MapKit;
 import com.qmvc.kit.PrintKit;
 
 /**
- * 閺佺増宓佹惔鎾寸叀鐠囶枎鎷�閻劎琚敍灞藉敶缂冾喖婀猰odel娑擃厾娈戞晶鐐插灩閺�鐓￠惃鍕杽闂勫拑鎷�鏉堟垵婀潻娆撳櫡鐎圭偟骞囬敍灞芥皑閸嶅繑妲搁敓锟介敓鏂ゆ嫹瀹搞儱鍙跨猾浼欐嫹?
+ * 閺佺増宓佹惔鎾寸叀鐠囶枎鎷�閻劎琚敍灞藉敶缂冾喖婀猰odel娑擃厾娈戞晶鐐插灩閺�鐓￠惃鍕杽闂勫拑鎷�鏉堟垵婀
+ * 潻娆撳櫡鐎圭偟骞囬敍灞芥皑閸嶅繑妲搁敓锟介敓鏂ゆ嫹瀹搞儱鍙跨猾浼欐嫹?
  * 
  * 
  */
@@ -30,6 +32,10 @@ public class Db {
 	 */
 	public static int save(String tableName, QmvcModel model) {
 		return save(tableName, model, QmvcConfig.pool.getConnection());
+	}
+
+	public static void queryIdforObject(String tableName, QmvcModel model) {
+		queryIdForObject(tableName, model, QmvcConfig.pool.getConnection());
 	}
 
 	/**
@@ -77,7 +83,6 @@ public class Db {
 					+ wenhao + ")";
 
 			ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		
 
 			// 閸旑煉鎷�娴肩姴寮敍灞藉弿闁劋浜掔�妤冾儊娑撹尙娈戣ぐ銏犵础
 			for (i = 0; i < values.length; i++) {
@@ -95,7 +100,7 @@ public class Db {
 			}
 
 		} catch (Exception e) {
-			
+
 			/**
 			 * 这里可以将异常封装成运行时异常，可以转义成不同意义的异常。
 			 * 
@@ -123,7 +128,7 @@ public class Db {
 				// 婵″倹鐏夋潻鐐村复闁劋缍呯粚鐑樺灗閼板懓绻涢幒銉︽Ц閼奉亜濮╅幓鎰唉閻ㄥ嫸绱濇稊鐔锋皑閺勵垵顕╁▽鈩冩箒閹垫挾鐣婚幏鎸庢降閸嬫矮绨ㄩ崝鈽呯礉闁絼绠炵亸杈箷缂佹瑧鍤庣粙瀣潨閿涘苯宓唖ave閿燂拷閿熸枻鎷峰鑼病閼奉亜濮╅幓鎰唉娴滃棴绱濋崣顖欎簰閹跺﹨绻涢幒銉ㄧ箷缂佹瑧鍤庣粙瀣潨.娑撳顐肩憰浣烘暏閸愬秵瀣侀敓锟�
 				if (conn != null && conn.getAutoCommit()) {
 					// 鏉╂瑩鍣风悰銊с仛conn閺勵垵鍤滈崝銊﹀絹娴溿倧绱濋敓锟介敓鏂ゆ嫹閸掓媽绻栭柌灞肩皑閸斺�鍑＄紒蹇曠波閺夌噦绱濈憰浣哥殺缁捐法鈻奸惃鍕箽闂勨晝顔堟稉顓犳畱鏉╃偞甯存稊鐔哥閻炲棙甯�敓锟�
-					
+
 					conn.close();// 鏉╂瑤閲渃lose鎼存棁顕氱悮顐﹀櫢閸愭瑤绨￠敍灞借嫙娑撳秵妲搁崗鎶芥４鏉╃偞甯撮敍宀嬫嫹?閺勵垰鐨㈡潻鐐村复娴溿倛绻曠紒娆掔箾閹恒儲鐫滈敍宀冪箾閹恒儲鐫滈崣顖欎簰鐏忓棗鍙炬禍銈囩舶閸忔湹绮禍铏规暏閿燂拷
 					QmvcConfig.pool.clearConnection();
 					// 婵″倹鐏夋潻娆撳櫡閻劍鍩涜箛妯款唶閸忔娊妫存禍鍡礉闁絼绠炲鍝勩亣閻ㄥ嫪绔撮悙鍦畱鏉╃偞甯村Ч鐘辩窗閼奉亣顢戦崶鐐存暪娑斿懍绨″▽锛勬暏閻ㄥ嫯绻涢幒銉嫹?
@@ -141,6 +146,154 @@ public class Db {
 	public static int delete() {
 
 		return 0;
+	}
+	
+	
+	
+
+	/**
+	 * 
+	 * 通过主键查询，返回唯一的对象。
+	 * 
+	 * */
+	private static void queryIdForObject(String tableName, QmvcModel model,
+			Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ResultSetMetaData rsmt = null;
+		try {
+			Map<String, String> strMap = MapKit.toStringMap(model.getAttrs());
+			if (strMap.size() != 1) {
+				throw new TooMuchParamException(
+						"model中提供的参数过多，只需要提供对应的主键（id）名称和值");
+			}
+			String pkeyName = null;
+			String pkValue = null;
+			for (String key : strMap.keySet()) {
+				pkeyName = key;
+				pkValue = strMap.get(key);
+			}
+			String querySql = "select * from " + tableName + "where "
+					+ pkeyName + " = " + pkValue;
+			ps = conn.prepareStatement(querySql);
+			rs = ps.executeQuery();
+			rs.last();
+			if (rs.getRow() > 1) {
+				throw new TooMuchParamException("输入的不是唯一主键，返回行数过多");
+			}
+			rs.first();
+			rsmt = ps.getMetaData();
+			int count = rsmt.getColumnCount();
+
+			for (int i = 1; i <= count; i++) {
+				model.set(rsmt.getColumnName(i), rs.getObject(i));
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				if (conn != null && conn.getAutoCommit()) {
+					conn.close();
+					QmvcConfig.pool.clearConnection();//将连接从线程对象中清除，防止误用。
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+	
+	
+	
+	public static int update(String tableName, QmvcModel model, Connection conn) {
+
+		int result = -1;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			String keys = "";
+			String wenhao = "";
+			Object values[] = new String[model.getAttrs().size()];
+
+			int i = 0;
+			Map<String, String> strMap = MapKit.toStringMap(model.getAttrs());
+
+			for (String attr : strMap.keySet()) {
+				keys = keys + attr + ",";
+				wenhao = wenhao + "?,";
+				values[i] = strMap.get(attr);
+				i++;
+			}
+
+			if (keys.endsWith(",")) {
+				keys = keys.substring(0, keys.length() - 1);
+			}
+
+			if (wenhao.endsWith(",")) {
+				wenhao = wenhao.substring(0, wenhao.length() - 1);
+			}
+
+			String sql = "insert into " + tableName + "(" + keys + ")values("
+					+ wenhao + ")";
+
+			ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+			for (i = 0; i < values.length; i++) {
+				ps.setObject(i + 1, values[i]);
+
+			}
+
+			result = ps.executeUpdate();
+			rs = ps.getGeneratedKeys();
+
+			if (rs.next()) {
+				Long id = rs.getLong(1);
+				model.set("id", id);
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				if (conn != null && conn.getAutoCommit()) {
+					conn.close();
+					QmvcConfig.pool.clearConnection();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		return result;
+
 	}
 
 }
