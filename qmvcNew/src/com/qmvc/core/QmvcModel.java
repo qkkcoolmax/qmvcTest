@@ -32,16 +32,38 @@ public class QmvcModel {
 		return i;
 	}
 
+	
+	
+	/**
+	 * new一个对象，设置他的id，然后就可以调用这个方法，然后就会将model中填充起来。
+	 * 
+	 * 
+	 * */
+	
+	public void queryIdForObject() {
+		Db.queryIdforObject(tableName, this);
+	}
+
 	/**
 	 * 淇濆瓨鎿嶄綔
 	 * 
 	 * @return
 	 */
 	public int save(Connection conn) {
-
 		int i = Db.save(tableName, this, conn);
 		return i;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public Map<String, Object> getAttrs() {
 		return attrs;
@@ -57,6 +79,10 @@ public class QmvcModel {
 
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+
+	public void clearAttr() {
+		this.attrs.clear();
 	}
 
 	/**
