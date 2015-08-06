@@ -34,7 +34,6 @@ public class ActionHandle {
 	public void handel(String methodName, Class<?> controller,
 			HttpServletRequest req, HttpServletResponse resp) {
 		try {
-
 			/**
 			 * handler方法通过action类对象反射生成了相應action的實例。以及方法对象 然后反射执行其方法。 *
 			 * */
@@ -45,7 +44,6 @@ public class ActionHandle {
 					.invoke(obj, req);
 			controller.getMethod("setResponse", HttpServletResponse.class)
 					.invoke(obj, resp);
-
 			// 注入其service的代理，Service为单例，代理还是多例吧。
 			Method[] methods = controller.getMethods();
 			for (Method mt : methods) {
@@ -66,8 +64,7 @@ public class ActionHandle {
 						}
 					}
 				}
-
-			}			// 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+			} // 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
 			Method method = controller.getMethod(methodName, null);
 			/**
 			 * 拦截器（aop）工作部分
@@ -76,9 +73,11 @@ public class ActionHandle {
 			// 如果没有这个注解将会返回空。
 			// 否则就获得了该方法上的“注解对象”
 			Aop aop = method.getAnnotation(Aop.class);//
-			//action就不做事务了吧
-			/*TransactionMethod tm = method
-					.getAnnotation(TransactionMethod.class);*/
+			// action就不做事务了吧
+			/*
+			 * TransactionMethod tm = method
+			 * .getAnnotation(TransactionMethod.class);
+			 */
 			if (aop != null) {
 				InterceptorInterface interceptor = (InterceptorInterface) QmvcConfig.beanfactory
 						.getSimpleBean(aop.interceptor());// 这里是获得了注解键值对中的值.这个值是一个class（用戶自己寫的自己的攔截器）
