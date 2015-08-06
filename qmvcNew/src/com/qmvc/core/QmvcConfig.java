@@ -56,7 +56,7 @@ public abstract class QmvcConfig {
 	public abstract void setRoute(Constant constant);
 
 	/**
-	 * �������ӳ�:��ʱ֧�֣�"com.jvn.connection.pool.DruidPool"
+	 * �������ӳ�:��ʱ֧�֣�"com.qmvc.connection.pool.DruidPool"
 	 * */
 	protected void setConnectionPoolSimply(JdbcConfig jdbdConfig,
 			String poolName) {
